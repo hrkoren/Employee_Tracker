@@ -74,11 +74,11 @@ const employeeSearch = () => {
     }
 ])
     .then((answer) => {
-        const query = 'SELECT * from employee';
+        const query = 'SELECT * from employee_trackerdb.employee as a inner join employee_trackerdb.role as b on a.role_id = b.id'
         connection.query(query, { employee: answer.employee }, (err, res) => {
             if (err) throw err;
-            res.forEach(({ id, first_name, last_name }) => {
-            console.log(`ID: ${id} || First Name: ${first_name} || Last Name: ${last_name} || Title: ${role.title} || Department: ${department.name} || Salary: ${role.salary} || Manager: ${manager_id}`);
+            res.forEach(({ id, first_name, last_name, role_id, department_id, salary, manager_id }) => {
+            console.log(`ID: ${id} || First Name: ${first_name} || Last Name: ${last_name} || Title: ${role_id} || Department: ${department_id} || Salary: ${salary} || Manager: ${manager_id}`);
         });
         });
     });
