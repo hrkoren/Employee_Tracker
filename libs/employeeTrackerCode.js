@@ -76,12 +76,23 @@ const employeeSearch = () => {
     .then((answer) => {
         const query = 'SELECT * from employee';
         connection.query(query, { employee: answer.employee }, (err, res) => {
-            console.log(
-                `ID: ${employee.id} || First Name: ${employee.first_name} || Last Name: ${employee.last_name} || Title: ${role.title} || Department: ${department.name} || Salary: ${role.salary} || Manager: ${employee.manager_id}`
-            )
-        })
-    })
+            if (err) throw err;
+            res.forEach(({ id, first_name, last_name }) => {
+            console.log(`ID: ${id} || First Name: ${first_name} || Last Name: ${last_name} || Title: ${role.title} || Department: ${department.name} || Salary: ${role.salary} || Manager: ${manager_id}`);
+        });
+        });
+    });
 };
+
+// const departSearch = () => {
+//     inquirer
+//     .prompt([
+//         {
+
+//         }
+//     ])
+// }
+
 
 const addEmployee = () => {
     inquirer
