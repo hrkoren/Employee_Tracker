@@ -163,8 +163,8 @@ const addEmployee = () => {
         type: 'list',
         choices () {
             const choiceArray = [];
-            results.forEach(({ results }) => {
-                choiceArray.push(results.first_name + " " + results.last_name);
+            results.forEach(({ id }) => {
+                choiceArray.push(id.first_name + " " + id.last_name);
             });
             return choiceArray;
         },
