@@ -1,6 +1,5 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-// const employeeDatabase = require('../db');
 const consTable = require('console.table');
 
 const connection = mysql.createConnection({
@@ -45,6 +44,7 @@ const runTracker = () => {
             case 'View All Employees By Manager':
                 managerSearch();
                 break;
+
             case 'Add Employee':
                 addEmployee();
                 break;
@@ -81,80 +81,113 @@ const employeeSearch = () => {
             res.forEach(({ first_name, last_name, title, name, salary, manager_id }) => {
                 console.log(`First Name: ${first_name} || Last Name: ${last_name} || Title: ${title} || Department: ${name} || Salary: ${salary} || Manager: ${manager_id}`);
         });
+        return runTracker();
         });
     });
 };
 
-// const departSearch = () => {
-//     inquirer
-//     .prompt([
-//         {
-//             name: 'search',
-//             type: 'confirm',
-//             message: 'View department list'
-//         }
-//     ])
-//     .then((answer) => {
-//         const query = 'SELECT * FROM ';
-//         connection.query(query, {}, (err, res)=> {
-//             if(err) throw err;
-//             res.foreach(())
-//         });
-//     });
-// }
+const departSearch = () => {
+    inquirer
+    .prompt([
+        {
+            name: 'search',
+            type: 'confirm',
+            message: 'View department list'
+        }
+    ])
+    .then((answer) => {
+        const query = 'SELECT department.name, first_name, last_name FROM department as d LEFT JOIN department ON d.name = d.name RIGHT JOIN roles ON roles.id = department_id RIGHT JOIN employee ON role_id = roles.id group by first_name';
+        connection.query(query, {}, (err, res)=> {
+            if(err) throw err;
+            res.forEach(({ name, first_name, last_name }) => {
+                console.log(`Department: ${name} || First Name: ${first_name} || Last Name: ${last_name}`);
+        });
+        return runTracker();
+        });
+    });
+}
 
-// const addEmployee = () => {
-//     inquirer
-//     .prompt([
-//         {
-//         name: 'firstName',
-//         type: 'input',
-//         message: 'Please enter the first name for the new employee.',
-//     },
-//     {
-//         name: 'lastName',
-//         type: 'input',
-//         message: 'Please enter the last name for the new employee.'
-//     },
-//     {
-//         name: 'roles',
-//         type: 'choice',
-//         choices: [
-//             'Sales Team Lead',
-//             'Salesperson',
-//             'Lead Engineer',
-//             'Software Engineer',
-//             'Accountant',
-//             'Legal Team Lead',
-//             'Lawyer'
-//         ],
-//     },
-//     {
-//         name: 'salary',
-//         type: 'input',
-//         message: 'Enter the new employee\'s salary.',
-//     },
-//     {
-//         name: 'manager',
-//         type: 'input',
-//         message: 'Enter the new employee\'s manager.'
-//     }
-//     ])
-//     .then((answer) => {
-//         connection.query(
-//             'INSERT INTO employee SET ?',
-//             {
-//                 first_name: answer.firstName,
-//                 last_name: answer.lastName,
-//                 role: answer.roles,
-//                 salary: answer.salary,
-//                 manager: answer.
-//             },
-//             (err) => {
-//                 if (err) throw err;
-//                 console.log('New employee added.');
-//                 start();
-//             }
-//         );
-//     });
-// };
+const managerSearch = () => {
+    inquirer
+    .prompt([
+        {
+            name: 'search',
+            type: 'confirm',
+            message: 'View all managers'
+        }
+    ])
+    .then((answer) => {
+        const query = 'SELECT first_name, last_name FROM employee where manager_id is null;';
+        connection.query(query, {}, (err, res)=> {
+            if(err) throw err;
+            res.forEach(({ first_name, last_name }) => {
+                console.log(`First Name: ${first_name} || Last Name: ${last_name}`);
+        });
+        return runTracker();
+        });
+    });
+}
+
+const addEmployee = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+        if (err) throw err;
+        console.log(results);
+    inquirer
+    .prompt([
+        {
+        name: 'firstName',
+        type: 'input',
+        message: 'Please enter the first name for the new employee.',
+    },
+    {
+        name: 'lastName',
+        type: 'input',
+        message: 'Please enter the last name for the new employee.'
+    },
+    {
+        name: 'roles',
+        type: 'list',
+        choices: [
+            'Sales Team Lead',
+            'Salesperson',
+            'Lead Engineer',
+            'Software Engineer',
+            'Accountant',
+            'Legal Team Lead',
+            'Lawyer'
+        ],
+        message: 'What\'s the new employee\'s title?',
+    },
+    {
+        name: 'manager',
+        type: 'list',
+        choices () {
+            const choiceArray = [];
+            results.forEach(({ results }) => {
+                choiceArray.push(results.first_name + " " + results.last_name);
+            });
+            return choiceArray;
+        },
+        message: 'Enter the new employee\'s manager.'
+    }
+    ])
+    .then((answer) => {
+        console.log(answer);
+        // connection.query(
+        //     'INSERT INTO employee SET ?',
+        //     {
+        //         first_name: answer.firstName,
+        //         last_name: answer.lastName,
+        //         role_id: answer.role_id,
+        //     },
+        //     (err) => {
+        //         if (err) throw err;
+        //         console.log('New employee added.');
+        //         start();
+        //     }
+        // );
+        runTracker();
+    });
+    
+    });
+};
