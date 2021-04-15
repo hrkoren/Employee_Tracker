@@ -163,8 +163,8 @@ const addEmployee = () => {
         type: 'list',
         choices () {
             const choiceArray = [];
-            results.forEach(({ id }) => {
-                choiceArray.push(id.first_name + " " + id.last_name);
+            [...results].forEach(( manager ) => {
+                choiceArray.push(manager.first_name + " " + manager.last_name);
             });
             return choiceArray;
         },
@@ -173,19 +173,19 @@ const addEmployee = () => {
     ])
     .then((answer) => {
         console.log(answer);
-        // connection.query(
-        //     'INSERT INTO employee SET ?',
-        //     {
-        //         first_name: answer.firstName,
-        //         last_name: answer.lastName,
-        //         role_id: answer.role_id,
-        //     },
-        //     (err) => {
-        //         if (err) throw err;
-        //         console.log('New employee added.');
-        //         start();
-        //     }
-        // );
+        connection.query(
+            'INSERT INTO employee SET ?',
+            {
+                first_name: answer.firstName,
+                last_name: answer.lastName,
+                role_id: answer.role_id,
+            },
+            (err) => {
+                if (err) throw err;
+                console.log('New employee added.');
+                start();
+            }
+        );
         runTracker();
     });
     
