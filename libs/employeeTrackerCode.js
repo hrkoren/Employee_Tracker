@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const console = require('console.table');
+const employeeDatabase = require('../db');
+const consTable = require('console.table');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -145,6 +146,9 @@ const addEmployee = () => {
             {
                 first_name: answer.firstName,
                 last_name: answer.lastName,
+                role: answer.roles,
+                salary: answer.salary,
+                manager: answer.
             },
             (err) => {
                 if (err) throw err;
