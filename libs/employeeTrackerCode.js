@@ -74,25 +74,33 @@ const employeeSearch = () => {
     }
 ])
     .then((answer) => {
-        const query = 'SELECT * from employee_trackerdb.employee as a inner join employee_trackerdb.role as b on a.role_id = b.id'
+        const query = 'SELECT * FROM employee LEFT JOIN roles ON employee.role_id = roles.id';
         connection.query(query, { employee: answer.employee }, (err, res) => {
             if (err) throw err;
-            res.forEach(({ id, first_name, last_name, role_id, department_id, salary, manager_id }) => {
-            console.log(`ID: ${id} || First Name: ${first_name} || Last Name: ${last_name} || Title: ${role_id} || Department: ${department_id} || Salary: ${salary} || Manager: ${manager_id}`);
+            res.forEach(({ id, first_name, last_name, roles_id, department_id, salary, manager_id }) => {
+                console.log(`ID: ${id} || First Name: ${first_name} || Last Name: ${last_name} || Title: ${roles_id} || Department: ${department_id} || Salary: ${salary} || Manager: ${manager_id}`);
         });
         });
     });
 };
 
-// const departSearch = () => {
-//     inquirer
-//     .prompt([
-//         {
-
-//         }
-//     ])
-// }
-
+const departSearch = () => {
+    inquirer
+    .prompt([
+        {
+            name: 'search',
+            type: 'confirm',
+            message: 'View department list'
+        }
+    ])
+    .then((answer) => {
+        const query = 'SELECT * FROM ';
+        connection.query(query, {}, (err, res)=> {
+            if(err) throw err;
+            res.foreach(())
+        });
+    });
+}
 
 const addEmployee = () => {
     inquirer
@@ -108,7 +116,7 @@ const addEmployee = () => {
         message: 'Please enter the last name for the new employee.'
     },
     {
-        name: 'role',
+        name: 'roles',
         type: 'choice',
         choices: [
             'Sales Team Lead',
