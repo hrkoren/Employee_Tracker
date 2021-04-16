@@ -173,12 +173,14 @@ const addEmployee = () => {
     ])
     .then((answer) => {
         console.log(answer);
+        try {
         connection.query(
             'INSERT INTO employee SET ?',
             {
                 first_name: answer.firstName,
                 last_name: answer.lastName,
-                role_id: answer.role_id,
+                // role_id: answer.roles,
+                // manager_id: answer.manager,
             },
             (err) => {
                 if (err) throw err;
@@ -186,7 +188,10 @@ const addEmployee = () => {
                 start();
             }
         );
-        runTracker();
+        } catch (err) {
+            console.log(err);
+        }
+        // runTracker();
     });
     
     });
