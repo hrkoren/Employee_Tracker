@@ -78,10 +78,10 @@ const employeeSearch = () => {
         const query = `SELECT e.id, e.first_name, e.last_name, title, salary, department.name, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee as e LEFT JOIN roles ON e.role_id = roles.id LEFT JOIN department ON department.id = roles.department_id LEFT JOIN employee manager on manager.id = e.manager_id group by e.first_name`;
         connection.query(query, { employee: answer.employee }, (err, res) => {
             if (err) throw err;
-            res.forEach(({ first_name, last_name, title, name, salary, Manager }) => {
+            // res.forEach(({ first_name, last_name, title, name, salary, Manager }) => {
                 // console.log(`First Name: '${first_name}' || Last Name: '${last_name}' || Title: '${title}' || Salary: ${salary} Department: '${name}' || Manager:'${Manager}'`);
-                console.table([{'First Name': first_name, 'Last Name': last_name, Title: title, Salary: salary, Department: `${name}`, Manager: Manager }]);
-        });
+                console.table(res);
+        // });
         return runTracker();
         });
     });
@@ -167,7 +167,7 @@ const addEmployee = () => {
             [...results].forEach(( manager ) => {
                 choiceArray.push(manager.first_name + " " + manager.last_name);
             });
-            return choiceArray;
+            return choiceArray[0].manager;
         },
         message: 'Enter the new employee\'s manager.'
     }
@@ -178,30 +178,33 @@ const addEmployee = () => {
 connection.query(
     `SELECT id from roles where title = '${answer.roles}'`, (err, res) => {
         if (err) throw err;
-        roleID = res;
+        roleID = res[0].id;
         console.log(answer.roles);
+        console.log(roleID);
+        console.log(manager_id);
+
+        try {
+            connection.query(
+                'INSERT INTO employee SET ?',
+                {
+                    first_name: answer.firstName,
+                    last_name: answer.lastName,
+                    role_id: roleID,
+                    manager_id: choiceArray,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('New employee added.');
+                }
+            );
+            } catch (err) {
+                console.log(err);
+            }
+            runTracker();
+        });
     })
     
-        try {
-        connection.query(
-            'INSERT INTO employee SET ?',
-            {
-                first_name: answer.firstName,
-                last_name: answer.lastName,
-                // role_id: roleID,
-                // manager_id: answer.manager_id,
-            },
-            (err) => {
-                if (err) throw err;
-                console.log('New employee added.');
-                start();
-            }
-        );
-        } catch (err) {
-            console.log(err);
-        }
-        // runTracker();
-    });
+        
     
     });
 };
