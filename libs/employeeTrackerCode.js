@@ -176,18 +176,17 @@ const addEmployee = () => {
             ])
             .then((answer) => {
                 console.log(answer);
+                let managerID = answer.manager_id;
                 let roleID = answer.roles;
-                let managerID = answer.manager
                 connection.query(
-                    `SELECT id from roles where title = '${answer.roles}'`, (err, res) => {
+                    `SELECT id FROM roles WHERE title = '${answer.roles}'`, (err, res) => {
                         if (err) throw err;
                         roleID = res[0].id;
-                        console.log(answer.roles);
-                        console.log(roleID);
-                        managerID = res[0].manager_id;
-                        console.log(answer.manager);
-                        console.log(manager_id);
-
+                        // console.log(answer.roles);
+                        // console.log(roleID);
+                        managerID = res[0].id;
+                        console.log(answer.manager_id);
+                        console.log(managerID);
                         try {
                             connection.query(
                                 'INSERT INTO employee SET ?',
