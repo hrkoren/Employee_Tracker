@@ -75,11 +75,11 @@ const employeeSearch = () => {
     }
 ])
     .then((answer) => {
-        const query = 'SELECT e.first_name, e.last_name, title, salary, department.name FROM employee as e LEFT JOIN roles ON e.role_id = roles.id LEFT JOIN department ON name = name group by e.first_name';
+        const query = `SELECT e.id, e.first_name, e.last_name, title, salary, department.name, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee as e LEFT JOIN roles ON e.role_id = roles.id LEFT JOIN department ON department.id = roles.department_id LEFT JOIN employee manager on manager.id = e.manager_id group by e.first_name`;
         connection.query(query, { employee: answer.employee }, (err, res) => {
             if (err) throw err;
-            res.forEach(({ first_name, last_name, title, name, salary, manager_id }) => {
-                console.log(`First Name: ${first_name} || Last Name: ${last_name} || Title: ${title} || Department: ${name} || Salary: ${salary} || Manager: ${manager_id}`);
+            res.forEach(({ first_name, last_name, title, name, salary, Manager }) => {
+                console.log(`First Name: '${first_name}' || Last Name: '${last_name}' || Title: '${title}' || Salary: ${salary} Department: '${name}' || Manager:'${Manager}'`);
         });
         return runTracker();
         });
@@ -147,8 +147,8 @@ const addEmployee = () => {
     {
         name: 'roles',
         type: 'list',
-        choices: [
-            'Sales Team Lead',
+        choices:[
+            'Sales Lead',
             'Salesperson',
             'Lead Engineer',
             'Software Engineer',
@@ -173,14 +173,22 @@ const addEmployee = () => {
     ])
     .then((answer) => {
         console.log(answer);
+        let roleID = answer.roles;
+connection.query(
+    `SELECT id from roles where title = '${answer.roles}'`, (err, res) => {
+        if (err) throw err;
+        roleID = res;
+        console.log(answer.roles);
+    })
+    
         try {
         connection.query(
             'INSERT INTO employee SET ?',
             {
                 first_name: answer.firstName,
                 last_name: answer.lastName,
-                // role_id: answer.roles,
-                // manager_id: answer.manager,
+                role_id: roleID,
+                manager_id: answer.manager_id,
             },
             (err) => {
                 if (err) throw err;
