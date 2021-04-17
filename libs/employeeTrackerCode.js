@@ -79,7 +79,8 @@ const employeeSearch = () => {
         connection.query(query, { employee: answer.employee }, (err, res) => {
             if (err) throw err;
             res.forEach(({ first_name, last_name, title, name, salary, Manager }) => {
-                console.log(`First Name: '${first_name}' || Last Name: '${last_name}' || Title: '${title}' || Salary: ${salary} Department: '${name}' || Manager:'${Manager}'`);
+                // console.log(`First Name: '${first_name}' || Last Name: '${last_name}' || Title: '${title}' || Salary: ${salary} Department: '${name}' || Manager:'${Manager}'`);
+                console.table([{'First Name': first_name, 'Last Name': last_name, Title: title, Salary: salary, Department: `${name}`, Manager: Manager }]);
         });
         return runTracker();
         });
