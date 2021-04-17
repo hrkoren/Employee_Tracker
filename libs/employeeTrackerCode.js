@@ -96,7 +96,7 @@ const departSearch = () => {
         }
     ])
     .then((answer) => {
-        const query = 'SELECT department.name, first_name, last_name FROM department as d LEFT JOIN department ON d.name = d.name RIGHT JOIN roles ON roles.id = department_id RIGHT JOIN employee ON role_id = roles.id group by first_name';
+        const query = 'SELECT department.name, first_name, last_name FROM department as d LEFT JOIN department ON d.name = d.name RIGHT JOIN roles ON roles.id = roles.department_id RIGHT JOIN employee ON role_id = roles.id group by first_name';
         connection.query(query, {}, (err, res)=> {
             if(err) throw err;
             res.forEach(({ name, first_name, last_name }) => {
@@ -187,8 +187,8 @@ connection.query(
             {
                 first_name: answer.firstName,
                 last_name: answer.lastName,
-                role_id: roleID,
-                manager_id: answer.manager_id,
+                // role_id: roleID,
+                // manager_id: answer.manager_id,
             },
             (err) => {
                 if (err) throw err;
