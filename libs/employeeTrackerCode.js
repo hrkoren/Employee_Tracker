@@ -80,10 +80,7 @@ const employeeSearch = () => {
             const query = `SELECT e.id, e.first_name, e.last_name, title, salary, department.name, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee as e LEFT JOIN roles ON e.role_id = roles.id LEFT JOIN department ON department.id = roles.department_id LEFT JOIN employee manager on manager.id = e.manager_id group by e.first_name`;
             connection.query(query, { employee: answer.employee }, (err, res) => {
                 if (err) throw err;
-                // res.forEach(({ first_name, last_name, title, name, salary, Manager }) => {
-                // console.log(`First Name: '${first_name}' || Last Name: '${last_name}' || Title: '${title}' || Salary: ${salary} Department: '${name}' || Manager:'${Manager}'`);
                 console.table(res);
-                // });
                 return runTracker();
             });
         });
@@ -102,11 +99,9 @@ const departSearch = () => {
             const query = 'SELECT department.name, first_name, last_name FROM department as d LEFT JOIN department ON d.name = d.name RIGHT JOIN roles ON roles.id = roles.department_id RIGHT JOIN employee ON role_id = roles.id group by first_name';
             connection.query(query, {}, (err, res) => {
                 if (err) throw err;
-                // res.forEach(({ name, first_name, last_name }) => {
-                // console.log(`Department: ${name} || First Name: ${first_name} || Last Name: ${last_name}`);
                 console.table(res);
+                return runTracker();
             });
-            return runTracker();
         });
 }
 
@@ -123,11 +118,9 @@ const managerSearch = () => {
             const query = 'SELECT first_name, last_name FROM employee where manager_id is null;';
             connection.query(query, {}, (err, res) => {
                 if (err) throw err;
-                // res.forEach(({ first_name, last_name }) => {
-                // console.log(`First Name: ${first_name} || Last Name: ${last_name}`);
                 console.table(res);
+                return runTracker();
             });
-            return runTracker();
         });
 }
 
@@ -175,18 +168,14 @@ const addEmployee = () => {
                 }
             ])
             .then((answer) => {
-                console.log(answer);
+                // console.log(answer);
                 let managerID = answer.manager_id;
                 let roleID = answer.roles;
                 connection.query(
                     `SELECT id FROM roles WHERE title = '${answer.roles}'`, (err, res) => {
                         if (err) throw err;
                         roleID = res[0].id;
-                        // console.log(answer.roles);
-                        // console.log(roleID);
                         managerID = res[0].id;
-                        console.log(answer.manager_id);
-                        console.log(managerID);
                         try {
                             connection.query(
                                 'INSERT INTO employee SET ?',
@@ -225,19 +214,38 @@ const addRoles = () => {
                 name: 'Salary',
                 type: 'input',
                 message: 'What is the salary for the new title?',
+            },
+            {
+                name: 'deptID',
+                type: 'list',
+                choices: [
+                    'Engineering',
+                    'Sales',
+                    'Legal',
+                    'Marketing',
+                    'Finance',
+                ],
+                message: 'Which department?' 
             }
         ])
         .then((answer) => {
+            let deptID = answer.department;
+                connection.query(
+                    `SELECT id FROM department WHERE name = '${answer.department}'`, (err, res) => {
+                        if (err) throw err;
+                        // deptID = res[0].id;
             connection.query('INSERT INTO roles SET ?',
                 {
                     title: answer.Title,
                     salary: answer.Salary,
+                    department_id: deptID,
                 },
             (err) => {
                 if (err) throw err;
                 console.log('New role added.');
+                return runTracker();
             });
-            runTracker();
+            });
         });
     });
 };
@@ -249,7 +257,7 @@ const addDepartment = () => {
         inquirer
             .prompt([
                 {
-                    name: 'Department',
+                    name: 'name',
                     type: 'input',
                     message: 'What new department do you want to add?'
                 },
@@ -262,8 +270,8 @@ const addDepartment = () => {
                 (err) => {
                     if (err) throw err;
                     console.log('New department added.');
+                    runTracker();
                 });
-                runTracker();
             });
     });
 };
